@@ -73,9 +73,7 @@ public class TabForm {
         frame.setVisible(true);
 
         // 设置硬盘下拉框
-        List<String> diskNameList = GlobalVariables.DiskCache.getDiskNames();
-        diskNameList.add(0, "所有");
-        diskComboxTab1.setModel(new DefaultComboBoxModel(diskNameList.toArray()));
+        setDiskCombox();
 
 
         查询Button.addActionListener(new ActionListener() {
@@ -109,6 +107,9 @@ public class TabForm {
         tabbedPane1.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                if (tabbedPane1.getSelectedIndex() == 0) {
+                    setDiskCombox();
+                }
                 if (tabbedPane1.getSelectedIndex() == 1) {
                     setDiskTable();
                 }
@@ -284,6 +285,12 @@ public class TabForm {
                 dialog.setVisible(true);
             }
         });
+    }
+
+    private void setDiskCombox() {
+        List<String> diskNameList = GlobalVariables.DiskCache.getDiskNames();
+        diskNameList.add(0, "所有");
+        diskComboxTab1.setModel(new DefaultComboBoxModel(diskNameList.toArray()));
     }
 
     public void setDiskTable() {
