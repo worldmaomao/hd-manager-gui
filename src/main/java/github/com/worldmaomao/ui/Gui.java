@@ -1,5 +1,7 @@
 package github.com.worldmaomao.ui;
 
+import github.com.worldmaomao.constant.GlobalVariables;
+
 import javax.swing.*;
 
 /**
@@ -7,7 +9,7 @@ import javax.swing.*;
 public class Gui {
 
     public void showLoginForm() {
-        JFrame jframe = new JFrame("移动硬盘管理");
+        JFrame jframe = new JFrame(GlobalVariables.Title);
         jframe.setContentPane(new LoginForm(jframe).getRootPanel());
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.pack();

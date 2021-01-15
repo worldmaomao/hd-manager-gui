@@ -26,10 +26,16 @@ public class LoginForm {
     private JPanel rootPanel;
     private JPasswordField passwordField1;
     private JLabel processLabel;
+    private JTextField addressUrlTextFieldTab1;
 
 
     public LoginForm(JFrame frame) {
         this.frame = frame;
+
+        Config config = ConfigLoader.loadConfig();
+
+        addressUrlTextFieldTab1.setText(config.getServerUrl());
+        用户名TextField.setText(config.getUsername());
 
         重置Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -81,19 +87,26 @@ public class LoginForm {
         String username = LoginForm.this.用户名TextField.getText();
         String password = new String(LoginForm.this.passwordField1.getPassword());
         Boolean isKeepLogin = LoginForm.this.保持登录CheckBox.isSelected();
+        String serverUrl = LoginForm.this.addressUrlTextFieldTab1.getText();
 
         Config config = ConfigLoader.loadConfig();
+        config.setServerUrl(serverUrl);
         LoginVo loginVo = LoginVo.builder().username(username).password(password).build();
         LoginService loginService = LoginServiceImpl.builder().config(config).build();
         try {
             // 登录
             String token = loginService.login(loginVo);
             GlobalVariables.JWT = token;
+
+            // 保存配置信息
+            config.setUsername(username);
             // 保存token
             if (isKeepLogin) {
                 config.setToken(token);
-                ConfigLoader.storeConfig(config);
             }
+            ConfigLoader.storeConfig(config);
+
+
             // 加载服务器硬盘数据
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override

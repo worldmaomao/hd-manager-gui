@@ -28,10 +28,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
+ *
  */
 public class TabForm {
     private static final String[] diskColumns = new String[]{"Id", "硬盘名称", "描述"};
-    private static final String[] diskItemColumns = new String[]{"选中", "Id", "文件名", "文件类型", "硬盘", "入库时间"};
+    private static final String[] diskItemColumns = new String[]{"选中", "Id", "文件名", "硬盘", "入库时间"};
     private static final String[] fileScanColumns = new String[]{"选中", "文件名", "文件路径", "文件类型"};
 
 
@@ -64,8 +65,9 @@ public class TabForm {
     private JButton 删除Button1;
     private JButton 硬盘查询Button1;
 
+
     public TabForm() {
-        frame = new JFrame("移动硬盘管理");
+        frame = new JFrame(GlobalVariables.Title);
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -75,32 +77,9 @@ public class TabForm {
         // 设置硬盘下拉框
         setDiskCombox();
 
-
         查询Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String diskName = (String) diskComboxTab1.getSelectedItem();
-                DiskVo diskVo = GlobalVariables.DiskCache.getDiskByName(diskName);
-                String diskId = diskVo == null ? "" : diskVo.getId();
-                String fileName = keywordTextFieldTab1.getText();
-                String page = pageTab1.getText();
-                String pageSize = pageSizeTab1.getText();
-                QueryDiskItemRequestVo requestVo = new QueryDiskItemRequestVo();
-                requestVo.setDiskId(diskId);
-                requestVo.setFileName(fileName);
-                requestVo.setPage(NumberUtils.toInt(page, 1));
-                requestVo.setPageSize(NumberUtils.toInt(pageSize, 20));
-                DiskItemService diskItemService = new DiskItemServiceImpl(ConfigLoader.loadConfig());
-
-                try {
-                    QueryDiskItemResponseVo responseVo = diskItemService.query(requestVo);
-                    setDiskItemQueryResult(responseVo);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                } catch (Exception ex1) {
-                    ex1.printStackTrace();
-                }
-
-
+                searchDiskItem(1);
             }
         });
 
@@ -285,6 +264,39 @@ public class TabForm {
                 dialog.setVisible(true);
             }
         });
+
+        上一页Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int page = NumberUtils.toInt(pageTab1.getText(), 1);
+                page = (page - 1);
+                if (page < 1) {
+                    page = 1;
+                }
+                searchDiskItem(page);
+            }
+        });
+        下一页Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int page = NumberUtils.toInt(pageTab1.getText(), 1);
+                if (page < 1) {
+                    page = 1;
+                }
+                page = (page + 1);
+                searchDiskItem(page);
+            }
+        });
+        跳转Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int page = NumberUtils.toInt(pageTab1.getText(), 1);
+                if (page < 1) {
+                    page = 1;
+                }
+                searchDiskItem(page);
+            }
+        });
     }
 
     private void setDiskCombox() {
@@ -337,6 +349,28 @@ public class TabForm {
         fileScanTableTab3.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
     }
 
+    private void searchDiskItem(int page) {
+        String diskName = (String) diskComboxTab1.getSelectedItem();
+        DiskVo diskVo = GlobalVariables.DiskCache.getDiskByName(diskName);
+        String diskId = diskVo == null ? "" : diskVo.getId();
+        String fileName = keywordTextFieldTab1.getText();
+        String pageSize = pageSizeTab1.getText();
+        QueryDiskItemRequestVo requestVo = new QueryDiskItemRequestVo();
+        requestVo.setDiskId(diskId);
+        requestVo.setFileName(fileName);
+        requestVo.setPage(page);
+        requestVo.setPageSize(NumberUtils.toInt(pageSize, 20));
+        DiskItemService diskItemService = new DiskItemServiceImpl(ConfigLoader.loadConfig());
+        try {
+            QueryDiskItemResponseVo responseVo = diskItemService.query(requestVo);
+            setDiskItemQueryResult(responseVo);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex1) {
+            ex1.printStackTrace();
+        }
+    }
+
     private void setDiskItemQueryResult(QueryDiskItemResponseVo responseVo) {
         totalCountTab1.setText(String.valueOf(responseVo.getTotalCount()));
         pageSizeTab1.setText(String.valueOf(responseVo.getPageSize()));
@@ -346,19 +380,26 @@ public class TabForm {
         Object[][] rows = new Object[responseVo.getList().size()][];
         for (int i = 0; i < responseVo.getList().size(); i++) {
             DiskItemVo vo = responseVo.getList().get(i);
-            Object[] row = new Object[6];
+            Object[] row = new Object[5];
             row[0] = Boolean.FALSE;
             row[1] = vo.getId();
             row[2] = vo.getFileName();
-            row[3] = vo.getFileType().equalsIgnoreCase("file") ? "文件" : "目录";
-            row[4] = vo.getDiskName();
+            row[3] = vo.getDiskName();
             Date date = new Date(vo.getCreated() * 1000);
-            row[5] = df.format(date);
+            row[4] = df.format(date);
             rows[i] = row;
         }
         DiskItemSearchTableModel tableModel = new DiskItemSearchTableModel();
         tableModel.setDataVector(rows, diskItemColumns);
         diskItemSearchTableTab1.setModel(tableModel);
+
+        // 设置列宽
+        diskItemSearchTableTab1.getColumnModel().getColumn(0).setPreferredWidth(10);
+        diskItemSearchTableTab1.getColumnModel().getColumn(1).setPreferredWidth(0);
+        diskItemSearchTableTab1.getColumnModel().getColumn(2).setPreferredWidth(800);
+        diskItemSearchTableTab1.getColumnModel().getColumn(3).setPreferredWidth(20);
+        diskItemSearchTableTab1.getColumnModel().getColumn(4).setPreferredWidth(80);
+
         // 隐藏id列
         TableColumn idColumn = diskItemSearchTableTab1.getColumnModel().getColumn(1);
         diskItemSearchTableTab1.removeColumn(idColumn);
