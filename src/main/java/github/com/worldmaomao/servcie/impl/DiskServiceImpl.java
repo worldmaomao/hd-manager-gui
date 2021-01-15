@@ -13,6 +13,7 @@ import github.com.worldmaomao.vo.ServiceResultVo;
 import lombok.Builder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,9 @@ public class DiskServiceImpl implements DiskService {
         ResponseVo response = new HttpUtil().get(url, params);
         if (response.getCode() == 0) {
             JSONArray array = (JSONArray) (((JSONObject) response.getData()).get("list"));
+            if (array == null || array.isEmpty()){
+                return new ArrayList<>();
+            }
             List<DiskVo> voList = array.toJavaList(DiskVo.class);
             //System.out.println(voList);
             return voList;
