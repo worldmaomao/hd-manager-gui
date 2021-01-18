@@ -21,7 +21,9 @@
         <children>
           <component id="b986c" class="javax.swing.JLabel">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="70" height="-1"/>
+              </grid>
             </constraints>
             <properties>
               <labelFor value="24974"/>
@@ -48,10 +50,12 @@
         <children>
           <component id="548c0" class="javax.swing.JLabel">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="70" height="-1"/>
+              </grid>
             </constraints>
             <properties>
-              <text value="密    码"/>
+              <text value="密码"/>
             </properties>
           </component>
           <component id="5c73c" class="javax.swing.JPasswordField" binding="passwordField1" default-binding="true">
