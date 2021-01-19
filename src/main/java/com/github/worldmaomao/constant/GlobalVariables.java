@@ -16,7 +16,7 @@ import java.util.List;
 
 public class GlobalVariables {
 
-    public static final String Title = "离线硬盘资料管理工具";
+    public static final String Title = "硬盘资料管理工具";
 
     public static String JWT = null;
     public static final DiskCache DiskCache = new DiskCache();
