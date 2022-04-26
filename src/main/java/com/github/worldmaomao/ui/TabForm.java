@@ -64,6 +64,8 @@ public class TabForm {
     private JButton 删除所选Button;
     private JButton 删除Button1;
     private JButton 硬盘查询Button1;
+    private JButton 全选Button;
+    private JButton 反选Button;
 
 
     public TabForm() {
@@ -295,6 +297,50 @@ public class TabForm {
                     page = 1;
                 }
                 searchDiskItem(page);
+            }
+        });
+        全选Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (fileScanTableTab3.getModel().getRowCount() == 0) {
+                    return;
+                }
+                LocalFileScanTableModel tableModel = (LocalFileScanTableModel) fileScanTableTab3.getModel();
+                Vector dataVector = tableModel.getDataVector();
+                for (int i = 0; i < dataVector.size(); i++) {
+                    Vector row = (Vector) dataVector.get(i);
+                    row.set(0, Boolean.TRUE);
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        fileScanTableTab3.updateUI();
+                    }
+                });
+            }
+        });
+        反选Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (fileScanTableTab3.getModel().getRowCount() == 0) {
+                    return;
+                }
+                LocalFileScanTableModel tableModel = (LocalFileScanTableModel) fileScanTableTab3.getModel();
+                Vector dataVector = tableModel.getDataVector();
+                for (int i = 0; i < dataVector.size(); i++) {
+                    Vector row = (Vector) dataVector.get(i);
+                    if((Boolean)row.get(0)) {
+                        row.set(0, Boolean.FALSE);
+                    } else {
+                        row.set(0, Boolean.TRUE);
+                    }
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        fileScanTableTab3.updateUI();
+                    }
+                });
             }
         });
     }
